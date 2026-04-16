@@ -177,4 +177,4 @@ class AcknowledgementsController extends ResourceController
             $itemModel->insert($payload);
         }
     }
-}
+}   
