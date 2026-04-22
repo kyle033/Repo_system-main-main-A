@@ -36,7 +36,7 @@
       <div class="flex-1 min-w-0">
         <div class="flex flex-wrap items-center justify-center gap-2 text-[10px] uppercase tracking-[0.18em] text-slate-400 sm:text-xs sm:tracking-[0.28em]">
           <router-link
-            v-for="item in topNavItems"
+            v-for="item in filteredTopNavItems"
             :key="item.path"
             :to="item.path"
             class="whitespace-nowrap rounded-full px-3 py-2 transition sm:px-4"
@@ -220,8 +220,19 @@ const topNavItems = [
   { name: 'Acknowledgements', path: '/acknowledgements' }
 ]
 
+const isResearcher = computed(() => isAuthenticated.value && role.value === 'researcher')
+
+const filteredTopNavItems = computed(() =>
+  isResearcher.value
+    ? topNavItems.filter((item) => item.path === '/publications')
+    : topNavItems
+)
+
 const filteredMenuItems = computed(() =>
   menuItems.filter((item) => {
+    if (isResearcher.value) {
+      return item.path === '/publications'
+    }
     if (item.requiresAdmin) {
       return isAuthenticated.value && role.value === 'admin'
     }

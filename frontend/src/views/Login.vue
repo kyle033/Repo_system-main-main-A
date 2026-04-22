@@ -74,8 +74,10 @@ const handleLogin = async () => {
     const response = await axios.post(`${apiBase}/auth/login`, form.value)
     if (response?.data?.data) {
       setUser(response.data.data)
+      const nextPath = response.data.data.role === 'researcher' ? '/publications' : '/dashboard'
+      router.push(nextPath)
+      return
     }
-    router.push('/dashboard')
   } catch (err) {
     error.value = err?.response?.data?.message || 'Login failed'
   } finally {

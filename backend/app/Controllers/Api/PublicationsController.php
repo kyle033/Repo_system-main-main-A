@@ -151,6 +151,13 @@ class PublicationsController extends ResourceController
     public function create()
     {
         try {
+            if (!$this->canCreatePublication()) {
+                return $this->fail([
+                    'status' => 'error',
+                    'message' => 'Forbidden'
+                ], 403);
+            }
+
             $data = $this->request->getJSON(true);
             $data['authors'] = $this->normalizeAuthors($data['authors'] ?? null);
 
@@ -212,6 +219,13 @@ class PublicationsController extends ResourceController
     public function update($id = null)
     {
         try {
+            if (!$this->canFullyManagePublications()) {
+                return $this->fail([
+                    'status' => 'error',
+                    'message' => 'Forbidden'
+                ], 403);
+            }
+
             $data = $this->request->getJSON(true);
             if (array_key_exists('authors', $data)) {
                 $data['authors'] = $this->normalizeAuthors($data['authors']);
@@ -271,6 +285,13 @@ class PublicationsController extends ResourceController
     public function delete($id = null)
     {
         try {
+            if (!$this->canFullyManagePublications()) {
+                return $this->fail([
+                    'status' => 'error',
+                    'message' => 'Forbidden'
+                ], 403);
+            }
+
             if (!$this->model->find($id)) {
                 return $this->failNotFound('Publication not found');
             }
@@ -350,6 +371,13 @@ class PublicationsController extends ResourceController
     public function bulkImport()
     {
         try {
+            if (!$this->canFullyManagePublications()) {
+                return $this->fail([
+                    'status' => 'error',
+                    'message' => 'Forbidden'
+                ], 403);
+            }
+
             $publications = $this->request->getJSON(true);
             
             if (!is_array($publications) || empty($publications)) {
@@ -440,6 +468,18 @@ class PublicationsController extends ResourceController
         }
 
         return json_encode($cleaned);
+    }
+
+    private function canCreatePublication(): bool
+    {
+        $role = (string)(session()->get('role') ?? '');
+        return in_array($role, ['admin', 'editor', 'researcher'], true);
+    }
+
+    private function canFullyManagePublications(): bool
+    {
+        $role = (string)(session()->get('role') ?? '');
+        return in_array($role, ['admin', 'editor'], true);
     }
 
     private function buildFacultyLookup(): array

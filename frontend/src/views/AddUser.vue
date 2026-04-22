@@ -45,7 +45,7 @@
             <tbody class="divide-y divide-slate-800 text-slate-200">
               <tr v-for="user in pagedUsers" :key="user.id" class="hover:bg-slate-900/60">
                 <td class="px-4 py-4 align-top text-slate-200 whitespace-nowrap">{{ user.username }}</td>
-                <td class="px-4 py-4 align-top text-slate-300 capitalize whitespace-nowrap">{{ user.role }}</td>
+                <td class="px-4 py-4 align-top text-slate-300 whitespace-nowrap">{{ formatRole(user.role) }}</td>
                 <td class="px-4 py-4 align-top text-slate-200 capitalize whitespace-nowrap">{{ user.status }}</td>
                 <td class="px-4 py-4 align-top text-slate-300 whitespace-nowrap">{{ formatDate(user.created_at) }}</td>
                 <td class="px-4 py-4 align-top text-right">
@@ -156,6 +156,7 @@
               >
                 <option value="admin">Admin</option>
                 <option value="editor">Editor</option>
+                <option value="researcher">Researcher</option>
               </select>
             </div>
           </div>
@@ -366,6 +367,13 @@ const formatDate = (value) => {
   if (Number.isNaN(date.getTime())) return value
   return date.toLocaleDateString()
 }
+
+const formatRole = (value) =>
+  String(value ?? '')
+    .split('_')
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join(' ')
 
 const openModal = () => {
   if (!isAdmin.value) return
